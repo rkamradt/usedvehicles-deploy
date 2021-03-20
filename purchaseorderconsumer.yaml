@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purchaseorderconsumer-deployment
+  labels:
+    app: purchaseorderconsumer
+spec:
+  selector:
+    matchLabels:
+      app: purchaseorderconsumer
+  template:
+    metadata:
+      labels:
+        app: purchaseorderconsumer
+    spec:
+      containers:
+      - name: purchaseorderconsumer
+        image: docker.io/rlkamradt/purchaseorderconsumer:1.0-SNAPSHOT
+        env:
+          - name: DATABASE_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cb-example-auth
+                key: username
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cb-example-auth
+                key: password
+          - name: QUEUE_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: myrabbit-default-user
+                key: username
+          - name: QUEUE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myrabbit-default-user
+                key: password
+          - name: DATABASE_HOST_NAME
+            value: cb-example-srv
+          - name: QUEUE_HOST_NAME
+            value: myrabbit

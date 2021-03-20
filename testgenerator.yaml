@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testgenerator
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: testgenerator
+        image: docker.io/rlkamradt/testgenerator:1.0-SNAPSHOT
+        env:
+          - name: QUEUE_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: myrabbit-default-user
+                key: username
+          - name: QUEUE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myrabbit-default-user
+                key: password
+          - name: QUEUE_HOST_NAME
+            value: myrabbit
+      restartPolicy: Never
