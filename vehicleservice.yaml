@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vehicleservice-deployment
+  labels:
+    app: vehicleservice
+spec:
+  selector:
+    matchLabels:
+      app: vehicleservice
+  template:
+    metadata:
+      labels:
+        app: vehicleservice
+    spec:
+      containers:
+      - name: vehicleservice
+        image: docker.io/rlkamradt/vehicleservice:1.0-SNAPSHOT
+        env:
+          - name: DATABASE_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cb-example-auth
+                key: username
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cb-example-auth
+                key: password
+          - name: QUEUE_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: myrabbit-default-user
+                key: username
+          - name: QUEUE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: myrabbit-default-user
+                key: password
+          - name: DATABASE_HOST_NAME
+            value: cb-example-srv
+          - name: QUEUE_HOST_NAME
+            value: myrabbit
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vehicleservice-service
+spec:
+  type: ClusterIP
+  selector:
+    app: vehicleservice
+  ports:
+  - port: 8080
+    targetPort: 80
